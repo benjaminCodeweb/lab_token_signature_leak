@@ -1,6 +1,7 @@
 param(
     [switch]$Rebuild,
-    [switch]$Reinstall
+    [switch]$Reinstall,
+    [string]$BindAddress = '127.0.0.1'
 )
 
 # Ejecuta Kanbia SIN Docker. Un único proceso Node.js sirve API + React compilado.
@@ -8,6 +9,16 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $server = Join-Path $root 'server'
 $client = Join-Path $root 'client'
+
+try {
+    $parsedAddress = [System.Net.IPAddress]::Parse($BindAddress)
+    if ($parsedAddress.AddressFamily -ne [System.Net.Sockets.AddressFamily]::InterNetwork) {
+        throw 'Solo se admite una dirección IPv4'
+    }
+}
+catch {
+    throw "Dirección IPv4 inválida: $BindAddress"
+}
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     throw 'Node.js no está instalado. Instalá Node.js 22 LTS x64 y reintentá.'
@@ -65,7 +76,7 @@ if ($needsBuild) {
 
 # La clave JWT fija es deliberada para el ejercicio. NUNCA usar en producción.
 $env:NODE_ENV = 'production'
-$env:HOST = '127.0.0.1'
+$env:HOST = $BindAddress
 $env:PORT = '1000'
 $env:DB_PATH = Join-Path $root 'data\kanbia.db'
 if ([string]::IsNullOrWhiteSpace($env:JWT_SECRET)) {
@@ -77,12 +88,21 @@ if ([string]::IsNullOrWhiteSpace($env:DEV_DEBUG_TOKEN)) {
 
 Write-Host ''
 Write-Host '  KANBIA - modo local liviano (sin Docker)' -ForegroundColor Green
-Write-Host '  URL:         http://localhost:1000' -ForegroundColor Cyan
+if ($BindAddress -eq '0.0.0.0') {
+    Write-Host '  URL:         http://<IP-DE-WINDOWS>:1000' -ForegroundColor Cyan
+} else {
+    Write-Host "  URL:         http://${BindAddress}:1000" -ForegroundColor Cyan
+}
 Write-Host '  Credenciales: attacker@kanbia.local / password123'
 Write-Host '  Writeup:     http://localhost:1000/writeup'
 Write-Host '  Para detener: Ctrl+C'
 Write-Host ''
-Write-Host '  ADVERTENCIA: laboratorio deliberadamente vulnerable; usar solo en localhost.' -ForegroundColor Yellow
+if ($BindAddress -eq '127.0.0.1') {
+    Write-Host '  Laboratorio vulnerable disponible solo en esta PC.' -ForegroundColor Yellow
+} else {
+    Write-Host '  ADVERTENCIA: lab vulnerable expuesto en la interfaz indicada.' -ForegroundColor Yellow
+    Write-Host '  Usar solo en una red privada de confianza; restringir firewall al equipo Burp/Kali.' -ForegroundColor Yellow
+}
 Write-Host ''
 
 Push-Location $server

@@ -54,3 +54,23 @@ Para borrar e instalar de nuevo dependencias (por ejemplo, tras cambiar de versi
 - No uses esta configuración en servicios públicos o de producción.
 
 Docker continúa funcionando como alternativa mediante `autodeploy.ps1`.
+
+## Acceso desde Burp Suite en otra máquina o Kali virtualizada
+
+Desde Windows, averiguá la IPv4 de la interfaz que alcanza tu máquina Kali/Burp:
+
+```powershell
+ipconfig
+```
+
+Por ejemplo, si Windows tiene IP `192.168.1.50`, iniciá Kanbia así:
+
+```powershell
+.\start-local.ps1 -BindAddress 192.168.1.50
+```
+
+Desde Kali o Burp abrí `http://192.168.1.50:1000`. Ambas máquinas deben tener conectividad de red. Usá el navegador integrado de Burp o configurá el proxy para interceptar las solicitudes.
+
+Si Windows Firewall impide el acceso, autorizá temporalmente el TCP/1000 **solo en red privada y solo desde la IP de Kali**; cerrá esa regla al finalizar. No hagas port forwarding desde Internet ni utilices una red pública compartida: este laboratorio contiene fallas de seguridad intencionales.
+
+El valor predeterminado sigue siendo `127.0.0.1`, accesible únicamente desde el equipo que ejecuta Kanbia.

@@ -94,7 +94,11 @@ if ($BindAddress -eq '0.0.0.0') {
     Write-Host "  URL:         http://${BindAddress}:1000" -ForegroundColor Cyan
 }
 Write-Host '  Credenciales: attacker@kanbia.local / password123'
-Write-Host '  Writeup:     http://localhost:1000/writeup'
+if ($BindAddress -eq '0.0.0.0') {
+    Write-Host '  Writeup:     http://<IP-DE-WINDOWS>:1000/writeup'
+} else {
+    Write-Host "  Writeup:     http://${BindAddress}:1000/writeup"
+}
 Write-Host '  Para detener: Ctrl+C'
 Write-Host ''
 if ($BindAddress -eq '127.0.0.1') {

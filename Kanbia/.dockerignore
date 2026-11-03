@@ -1,0 +1,14 @@
+flag/
+tests/
+exploit/
+NOTES.md
+WRITEUP.md
+LAB.md
+CHALLENGE.md
+.spec.md
+VERIFICATION.md
+refs/
+**/node_modules
+**/dist
+.git
+.DS_Store

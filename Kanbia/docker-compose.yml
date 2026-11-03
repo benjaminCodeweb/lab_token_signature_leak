@@ -1,0 +1,16 @@
+services:
+  kanbia:
+    build: .
+    # Sin container_name fijo (colisiona en la nube; docker compose -p lo namespacea).
+    ports:
+      - "1000:1000"
+    volumes:
+      - kanbia-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=1000
+      - JWT_SECRET=kanbia-dev-signing-key-change-in-prod
+    restart: unless-stopped
+
+volumes:
+  kanbia-data:

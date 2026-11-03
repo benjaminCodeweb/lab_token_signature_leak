@@ -59,7 +59,9 @@ foreach ($directory in @($server, $client)) {
     }
     if (-not (Test-Path $modules)) {
         Write-Host "[*] Instalando dependencias: $directory" -ForegroundColor Cyan
-        Invoke-Npm -Directory $directory -NpmArgs @('install', '--no-audit', '--no-fund', '--prefer-offline')
+        # Prefer fresh registry metadata: a stale npm cache can resolve react-router-dom
+        # to a version whose react-router dependency is missing from cached metadata.
+        Invoke-Npm -Directory $directory -NpmArgs @('install', '--no-audit', '--no-fund', '--prefer-online', '--registry=https://registry.npmjs.org/')
         $needsBuild = $true
     }
 }

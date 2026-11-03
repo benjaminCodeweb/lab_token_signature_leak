@@ -74,3 +74,26 @@ Desde Kali o Burp abrí `http://192.168.1.50:1000`. Ambas máquinas deben tener 
 Si Windows Firewall impide el acceso, autorizá temporalmente el TCP/1000 **solo en red privada y solo desde la IP de Kali**; cerrá esa regla al finalizar. No hagas port forwarding desde Internet ni utilices una red pública compartida: este laboratorio contiene fallas de seguridad intencionales.
 
 El valor predeterminado sigue siendo `127.0.0.1`, accesible únicamente desde el equipo que ejecuta Kanbia.
+
+## Si npm indica `ETARGET` o `No matching version found for react-router@7.18.5`
+
+La versión existe, pero una caché vieja o un mirror desactualizado puede impedir resolverla. El launcher ahora consulta el registro oficial con `--prefer-online`. Actualizá tu rama y reintentá:
+
+```powershell
+git pull
+.\start-local.ps1 -BindAddress 192.168.1.50
+```
+
+(Cambiá la IP del ejemplo por la IPv4 real del equipo.)
+
+Si todavía falla, desde `Kanbia`:
+
+```powershell
+cd client
+npm cache clean --force
+npm install --registry=https://registry.npmjs.org/ --prefer-online --no-audit --no-fund
+cd ..
+.\start-local.ps1 -BindAddress 192.168.1.50
+```
+
+Si persiste, comprobá `npm config get registry` y la conectividad con el registro público.

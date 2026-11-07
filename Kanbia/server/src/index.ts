@@ -14,6 +14,8 @@ import orgRouter from './routes/org';
 import debugRouter from './routes/debug';
 
 const PORT = parseInt(process.env.PORT || '1000', 10);
+// Local mode binds only to loopback. Docker mode defaults to all interfaces.
+const HOST = process.env.HOST || '0.0.0.0';
 const CLIENT_DIST = path.join(__dirname, '../../client/dist');
 
 runSeed();
@@ -46,4 +48,4 @@ if (fs.existsSync(CLIENT_DIST)) {
 
 app.use((_req, res) => res.status(404).json({ error: 'not found' }));
 
-app.listen(PORT, () => console.log(`[APP] Kanbia escuchando en http://localhost:${PORT}`));
+app.listen(PORT, HOST, () => console.log(`[APP] Kanbia escuchando en http://localhost:${PORT} (host: ${HOST})`));
